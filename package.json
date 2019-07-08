@@ -17,7 +17,6 @@
   },
   "workspaces": [
     "modelserver-theia",
-    "browser-app",
-    "electron-app"
+    "example/*"
   ]
 }

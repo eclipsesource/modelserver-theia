@@ -13,19 +13,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { FrontendApplicationContribution, WebSocketConnectionProvider } from "@theia/core/lib/browser";
-import { ContainerModule } from "inversify";
-
-import { MODEL_SERVER_BACKEND_PATH, ModelServerBackend } from "../common/model-server-backend";
-import { ModelServerFrontendContribution } from "./model-server-frontend-contribution";
-import { DefaultModelServerApi, ModelServerApi } from "./modelserver-api";
+import { LaunchOptions } from "@modelserver/theia";
+import { ContainerModule, injectable } from "inversify";
+import { join, resolve } from "path";
 
 export default new ContainerModule(bind => {
-    bind(ModelServerFrontendContribution).toSelf().inSingletonScope();
-    bind(FrontendApplicationContribution).toService(ModelServerFrontendContribution);
-    bind(ModelServerApi).to(DefaultModelServerApi).inSingletonScope();
-    bind(ModelServerBackend).toDynamicValue(ctx => {
-        const connection = ctx.container.get(WebSocketConnectionProvider);
-        return connection.createProxy<ModelServerBackend>(MODEL_SERVER_BACKEND_PATH);
-    }).inSingletonScope();
+    bind(LaunchOptions).to(SimmpleLaunchOptions).inSingletonScope();
 });
+
+@injectable()
+export class SimmpleLaunchOptions implements LaunchOptions {
+    isRunning = true;
+    baseURL: string = "api/v1/";
+    serverPort: number = 8081;
+    hostname: string = "localhost";
+    jarPath = resolve(join(__dirname, '..', '..', 'build', 'com.eclipsesource.modelserver.example-0.0.1-SNAPSHOT-standalone'));
+    additionArgs = ["-e"];
+
+}
+

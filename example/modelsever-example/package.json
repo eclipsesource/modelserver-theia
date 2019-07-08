@@ -1,6 +1,6 @@
 {
-  "name": "@modelserver/theia",
-  "main": "lib/common/index.js",
+  "name": "modelserver-example",
+  "private": true,
   "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
   "keywords": [
     "theia-extension",
@@ -25,8 +25,7 @@
   "dependencies": {
     "@theia/core": "^0.7.1",
     "@theia/workspace": "^0.7.1",
-    "node-fetch": "2.6.0",
-    "ip": "1.1.5"
+    "@modelserver/theia": "0.0.1"
   },
   "devDependencies": {
     "rimraf": "latest",
@@ -36,7 +35,8 @@
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
     "build": "tsc && yarn run lint",
-    "lint": "tslint -c ../configs/tslint.json --project ./tsconfig.json",
+    "download-server": "cd ./scripts && ./download-server.sh",
+    "lint": "tslint -c ../../configs/tslint.json --project ./tsconfig.json",
     "watch": "tsc -w"
   },
   "theiaExtensions": [
