@@ -19,7 +19,7 @@ Install yarn.
 ## Running the browser example
 
     yarn rebuild:browser
-    cd browser-app
+    cd example/browser-app
     yarn start
 
 Open http://localhost:3000 in the browser.
@@ -27,7 +27,7 @@ Open http://localhost:3000 in the browser.
 ## Running the Electron example
 
     yarn rebuild:electron
-    cd electron-app
+    cd example/electron-app
     yarn start
 
 ## Developing with the browser example
@@ -40,7 +40,7 @@ Start watching of modelserver-theia.
 Start watching of the browser example.
 
     yarn rebuild:browser
-    cd browser-app
+    cd example/browser-app
     yarn watch
 
 Launch `Start Browser Backend` configuration from VS code.
@@ -57,7 +57,7 @@ Start watching of modelserver-theia.
 Start watching of the electron example.
 
     yarn rebuild:electron
-    cd electron-app
+    cd example/electron-app
     yarn watch
 
 Launch `Start Electron Backend` configuration from VS code.
