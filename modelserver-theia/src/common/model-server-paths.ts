@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-export namespace ModelServerPath {
+export namespace ModelServerPaths {
     export const INDEX = "index";
     export const MODEL_URIS = "modeluris";
     export const MODEL_CRUD = "models";

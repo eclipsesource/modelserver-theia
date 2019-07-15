@@ -16,13 +16,13 @@
 import { inject, injectable } from "inversify";
 
 import { ModelServerBackend } from "../common/model-server-backend";
-import { ModelServerPath } from "../common/model-server-paths";
+import { ModelServerPaths } from "../common/model-server-paths";
 import { Response, RestClient } from "./rest-client";
 
 export const ModelServerApi = Symbol("ModelServerApi");
 
 export interface ModelServerApi {
-    initialize(): boolean;
+    initialize(): Promise<boolean>;
 
     get(modelUri: string): Promise<Response<string>>
     getAll(): Promise<Response<string[]>>
@@ -41,42 +41,41 @@ export class DefaultModelServerApi implements ModelServerApi {
     @inject(ModelServerBackend) protected readonly modelServerBackend: ModelServerBackend;
     private restClient: RestClient;
 
-    initialize(): boolean {
+    initialize(): Promise<boolean> {
         this.modelServerBackend.getLaunchOptions().then(options => {
             this.restClient = new RestClient(`http://${options.hostname}:${options.serverPort}/${options.baseURL}`);
             return true;
         });
-        return false;
+        return Promise.resolve(false);
     }
 
     async get(modelUri: string): Promise<Response<string>> {
-        return this.restClient.get<string>(ModelServerPath.MODEL_CRUD + "/" + modelUri);
+        return this.restClient.get<string>(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`);
     }
 
-    async  getAll(): Promise<Response<string[]>> {
-        return this.restClient.get<string[]>(ModelServerPath.MODEL_CRUD);
+    async getAll(): Promise<Response<string[]>> {
+        return this.restClient.get<string[]>(ModelServerPaths.MODEL_CRUD);
     }
     async delete(modelUri: string): Promise<void> {
-        this.restClient.remove(ModelServerPath.MODEL_CRUD + "/" + modelUri);
+        this.restClient.remove(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`);
     }
     async update(modelUri: string, newModel: any): Promise<void> {
-        this.restClient.patch<string>(ModelServerPath.MODEL_CRUD + "/" + modelUri, newModel);
+        this.restClient.patch<string>(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`);
     }
 
     async getSchema(modelUri: string): Promise<Response<string>> {
-        return this.restClient.get<string>(ModelServerPath.SCHEMA + "/" + modelUri);
+        return this.restClient.get<string>(`${ModelServerPaths.SCHEMA}/${modelUri}`);
     }
 
     async configure(configuration: ServerConfiguration): Promise<void> {
-        this.restClient.put(ModelServerPath.SERVER_CONFIGURE, configuration);
+        this.restClient.put(ModelServerPaths.SERVER_CONFIGURE, configuration);
     }
 
     ping(): Promise<Response<string>> {
-        return this.restClient.get<string>(ModelServerPath.SERVER_PING);
+        return this.restClient.get<string>(ModelServerPaths.SERVER_PING);
     }
 }
 
 export interface ServerConfiguration {
     workspaceRoot: string;
-    serverPort?: number;
 }

@@ -26,11 +26,17 @@ export class ModelServerFrontendContribution implements FrontendApplicationContr
     @inject(ModelServerApi) protected readonly modelServerService: ModelServerApi;
 
     configure(app: FrontendApplication): MaybePromise<void> {
-        this.modelServerService.initialize();
-        this.workspaceService.onWorkspaceChanged(e => {
-            if (e[0] && e[0].uri) {
-                this.modelServerService.configure({ workspaceRoot: e[0].uri });
-            }
-        });
+        return this.setup();
+    }
+
+    async setup(): Promise<void> {
+        const success = await this.modelServerService.initialize();
+        if (success) {
+            this.workspaceService.onWorkspaceChanged(e => {
+                if (e[0] && e[0].uri) {
+                    this.modelServerService.configure({ workspaceRoot: e[0].uri });
+                }
+            });
+        }
     }
 }

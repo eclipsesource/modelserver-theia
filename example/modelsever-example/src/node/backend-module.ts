@@ -18,11 +18,11 @@ import { ContainerModule, injectable } from "inversify";
 import { join, resolve } from "path";
 
 export default new ContainerModule(bind => {
-    bind(LaunchOptions).to(SimmpleLaunchOptions).inSingletonScope();
+    bind(LaunchOptions).to(SimpleLaunchOptions).inSingletonScope();
 });
 
 @injectable()
-export class SimmpleLaunchOptions implements LaunchOptions {
+export class SimpleLaunchOptions implements LaunchOptions {
     isRunning = true;
     baseURL: string = "api/v1/";
     serverPort: number = 8081;

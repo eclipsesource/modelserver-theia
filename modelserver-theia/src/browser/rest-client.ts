@@ -42,7 +42,7 @@ export class RestClient {
     }
 
 
-    async  get<T>(path: string, parameters?: Map<string, string>): Promise<Response<T>> {
+    async get<T>(path: string, parameters?: Map<string, string>): Promise<Response<T>> {
         let getUrl = path;
         if (parameters) {
             const urlParameters = this.encodeURLParameters(parameters);
@@ -51,11 +51,11 @@ export class RestClient {
         return this.performRequest<T>('get', getUrl);
     }
 
-    async  post<T>(url: string, body?: any): Promise<Response<T>> {
+    async post<T>(url: string, body?: any): Promise<Response<T>> {
         return this.performRequest<T>('post', url, body);
     }
 
-    async  put<T>(url: string, body?: any): Promise<Response<T>> {
+    async put<T>(url: string, body?: any): Promise<Response<T>> {
         return this.performRequest<T>('PUT', url, body);
     }
 

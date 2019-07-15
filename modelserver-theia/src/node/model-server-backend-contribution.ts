@@ -54,7 +54,7 @@ export class DefaultModelServerLauncher implements ModelServerLauncher, ModelSer
 
     protected startServer(): boolean {
         if (this.launchOptions.jarPath) {
-            const args = ["-jar", this.launchOptions.jarPath];
+            const args = ["-jar", this.launchOptions.jarPath, "--port", `${this.launchOptions.serverPort}`];
             args.push(...this.launchOptions.additionalArgs);
             this.spawnProcessAsync("java", args);
         } else {
