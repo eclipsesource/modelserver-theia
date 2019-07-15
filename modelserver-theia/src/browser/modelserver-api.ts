@@ -42,18 +42,17 @@ export class DefaultModelServerApi implements ModelServerApi {
     private restClient: RestClient;
 
     initialize(): Promise<boolean> {
-        this.modelServerBackend.getLaunchOptions().then(options => {
+        return this.modelServerBackend.getLaunchOptions().then(options => {
             this.restClient = new RestClient(`http://${options.hostname}:${options.serverPort}/${options.baseURL}`);
             return true;
         });
-        return Promise.resolve(false);
     }
 
-    async get(modelUri: string): Promise<Response<string>> {
+    get(modelUri: string): Promise<Response<string>> {
         return this.restClient.get<string>(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`);
     }
 
-    async getAll(): Promise<Response<string[]>> {
+    getAll(): Promise<Response<string[]>> {
         return this.restClient.get<string[]>(ModelServerPaths.MODEL_CRUD);
     }
     async delete(modelUri: string): Promise<void> {
@@ -63,7 +62,7 @@ export class DefaultModelServerApi implements ModelServerApi {
         this.restClient.patch<string>(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`);
     }
 
-    async getSchema(modelUri: string): Promise<Response<string>> {
+    getSchema(modelUri: string): Promise<Response<string>> {
         return this.restClient.get<string>(`${ModelServerPaths.SCHEMA}/${modelUri}`);
     }
 
