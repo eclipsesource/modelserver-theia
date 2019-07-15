@@ -18,9 +18,9 @@ import { ProcessErrorEvent } from "@theia/process/lib/node/process";
 import { ProcessManager } from "@theia/process/lib/node/process-manager";
 import { RawProcess, RawProcessFactory } from "@theia/process/lib/node/raw-process";
 import * as cp from "child_process";
-import { inject, injectable } from "inversify";
+import { inject, injectable, optional } from "inversify";
 
-import { LaunchOptions, ModelServerBackend } from "../common/model-server-backend";
+import { DEFAULT_LAUNCH_OPTIONS, LaunchOptions, ModelServerBackend } from "../common/model-server-backend";
 
 export const ModelServerLauncher = Symbol("ModelServerLauncher");
 
@@ -31,7 +31,7 @@ export interface ModelServerLauncher {
 
 @injectable()
 export class DefaultModelServerLauncher implements ModelServerLauncher, ModelServerBackend, BackendApplicationContribution {
-    @inject(LaunchOptions) protected readonly launchOptions: LaunchOptions;
+    @inject(LaunchOptions) @optional() protected readonly launchOptions: LaunchOptions;
     @inject(RawProcessFactory) protected readonly processFactory: RawProcessFactory;
     @inject(ProcessManager) protected readonly processManager: ProcessManager;
 
@@ -83,7 +83,7 @@ export class DefaultModelServerLauncher implements ModelServerLauncher, ModelSer
     }
 
     getLaunchOptions(): Promise<LaunchOptions> {
-        return Promise.resolve(this.launchOptions);
+        return Promise.resolve(this.launchOptions ? this.launchOptions : DEFAULT_LAUNCH_OPTIONS);
     }
 
     protected onDidFailSpawnProcess(error: Error | ProcessErrorEvent): void {

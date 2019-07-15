@@ -41,12 +41,11 @@ export class DefaultModelServerApi implements ModelServerApi {
     @inject(ModelServerBackend) protected readonly modelServerBackend: ModelServerBackend;
     private restClient: RestClient;
 
-    initialize(): Promise<boolean> {
-        this.modelServerBackend.getLaunchOptions().then(options => {
+    async initialize(): Promise<boolean> {
+        return this.modelServerBackend.getLaunchOptions().then(options => {
             this.restClient = new RestClient(`http://${options.hostname}:${options.serverPort}/${options.baseURL}`);
             return true;
         });
-        return Promise.resolve(false);
     }
 
     async get(modelUri: string): Promise<Response<string>> {
