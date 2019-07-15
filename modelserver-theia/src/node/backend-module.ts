@@ -13,9 +13,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { ConnectionHandler, JsonRpcConnectionHandler } from "@theia/core";
+import { BackendApplicationContribution } from "@theia/core/lib/node";
 import { ContainerModule } from "inversify";
 
-export default new ContainerModule(bind => {
-    // add your contribution bindings here
+import { MODEL_SERVER_BACKEND_PATH, ModelServerBackend } from "../common/model-server-backend";
+import { DefaultModelServerLauncher, ModelServerLauncher } from "./model-server-backend-contribution";
 
+export default new ContainerModule(bind => {
+    bind(DefaultModelServerLauncher).toSelf().inSingletonScope();
+    bind(ModelServerLauncher).toService(DefaultModelServerLauncher);
+
+    bind(ModelServerBackend).toService(DefaultModelServerLauncher);
+
+    bind(BackendApplicationContribution).toService(DefaultModelServerLauncher);
+
+    bind(ConnectionHandler).toDynamicValue(ctx =>
+        new JsonRpcConnectionHandler<ModelServerBackend>(MODEL_SERVER_BACKEND_PATH, () => {
+            return ctx.container.get<ModelServerBackend>(ModelServerBackend);
+        })
+    ).inSingletonScope();
 });

@@ -17,14 +17,14 @@
     "@theia/textmate-grammars": "^0.7.1",
     "@theia/typescript": "^0.7.1",
     "@theia/messages": "^0.7.1",
-    "@modelserver/theia": "0.0.1"
+    "modelserver-example": "0.0.1"
   },
   "devDependencies": {
     "@theia/cli": "^0.7.1"
   },
   "scripts": {
     "prepare": "theia build --mode development",
-    "start": "theia start",
+    "start": "theia start --root-dir=../example-workspace",
     "watch": "theia build --watch --mode development"
   },
   "theia": {
