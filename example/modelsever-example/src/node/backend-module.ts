@@ -23,12 +23,11 @@ export default new ContainerModule(bind => {
 
 @injectable()
 export class SimpleLaunchOptions implements LaunchOptions {
-    isRunning = true;
+    isRunning = false;
     baseURL: string = "api/v1/";
     serverPort: number = 8081;
     hostname: string = "localhost";
-    jarPath = resolve(join(__dirname, '..', '..', 'build', 'com.eclipsesource.modelserver.example-0.0.1-SNAPSHOT-standalone'));
-    additionArgs = ["-e"];
-
+    jarPath = resolve(join(__dirname, '..', '..', 'build', 'com.eclipsesource.modelserver.example-0.0.1-SNAPSHOT-standalone.jar'));
+    additionalArgs = ["--errorsOnly"];
 }
 
