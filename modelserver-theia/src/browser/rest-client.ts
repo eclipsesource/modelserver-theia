@@ -92,6 +92,6 @@ export class Response<T> {
     toString() {
         return `StatusCode: ${this.statusCode}
                 StatusMessage: ${this.statusMessage}
-                Response: ${JSON.stringify(this.element)}`;
+                Response: ${this.element ? JSON.stringify(this.element) : "undefined"}`;
     }
 }

@@ -42,10 +42,6 @@ export class DefaultModelServerLauncher implements ModelServerLauncher, ModelSer
     }
 
     start(): boolean {
-        const port = getPort();
-        if (port) {
-            this.launchOptions.serverPort = port;
-        }
         if (!this.launchOptions.isRunning) {
             return this.startServer();
         }
@@ -54,8 +50,10 @@ export class DefaultModelServerLauncher implements ModelServerLauncher, ModelSer
 
     protected startServer(): boolean {
         if (this.launchOptions.jarPath) {
-            const args = ["-jar", this.launchOptions.jarPath, "--port", `${this.launchOptions.serverPort}`];
-            args.push(...this.launchOptions.additionalArgs);
+            let args = ["-jar", this.launchOptions.jarPath, "--port", `${this.launchOptions.serverPort}`];
+            if (this.launchOptions.additionalArgs) {
+                args = [...args, ...this.launchOptions.additionalArgs];
+            }
             this.spawnProcessAsync("java", args);
         } else {
             this.logError("Could not start model server. No path to executable is specified");
@@ -98,7 +96,6 @@ export class DefaultModelServerLauncher implements ModelServerLauncher, ModelSer
 
     protected logInfo(data: string | Buffer) {
         if (data) {
-            this.logInfo(data);
             console.info(`ModelServerBackendContribution: ${data}`);
         }
     }
@@ -109,12 +106,4 @@ export class DefaultModelServerLauncher implements ModelServerLauncher, ModelSer
         this.dispose();
     }
 
-}
-export function getPort(): number | undefined {
-    const arg = process.argv.filter(arg1 => arg1.startsWith('--MS_PORT='))[0];
-    if (!arg) {
-        return undefined;
-    } else {
-        return Number.parseInt(arg.substring('--MS_PORT='.length), 10);
-    }
 }
