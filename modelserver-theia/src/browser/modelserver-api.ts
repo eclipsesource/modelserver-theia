@@ -19,6 +19,7 @@ import { ModelServerBackend } from "../common/model-server-backend";
 import { ModelServerPaths } from "../common/model-server-paths";
 import { Response, RestClient } from "./rest-client";
 
+
 export const ModelServerApi = Symbol("ModelServerApi");
 
 export interface ModelServerApi {
@@ -26,13 +27,13 @@ export interface ModelServerApi {
 
     get(modelUri: string): Promise<Response<string>>
     getAll(): Promise<Response<string[]>>
-    delete(modelUri: string): Promise<void>
-    update(modelUri: string, newModel: string): Promise<void>;
+    delete(modelUri: string): Promise<Response<boolean>>
+    update(modelUri: string, newModel: string): Promise<Response<string>>;
 
     getSchema(modelUri: string): Promise<Response<string>>
 
-    configure(configuration?: ServerConfiguration): Promise<void>;
-    ping(): Promise<Response<string>>;
+    configure(configuration?: ServerConfiguration): Promise<Response<boolean>>;
+    ping(): Promise<Response<boolean>>;
 }
 
 
@@ -49,29 +50,36 @@ export class DefaultModelServerApi implements ModelServerApi {
     }
 
     get(modelUri: string): Promise<Response<string>> {
-        return this.restClient.get<string>(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`);
+        return this.restClient.get(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`)
+            .then(r => r.mapBody(b => b.data));
     }
 
     getAll(): Promise<Response<string[]>> {
-        return this.restClient.get<string[]>(ModelServerPaths.MODEL_CRUD);
+        return this.restClient.get(ModelServerPaths.MODEL_CRUD)
+            .then(r => r.mapBody(b => b.data));
     }
-    async delete(modelUri: string): Promise<void> {
-        this.restClient.remove(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`);
+    delete(modelUri: string): Promise<Response<boolean>> {
+        return this.restClient.remove(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`)
+            .then(r => r.mapBody(b => b.type === "confirm"));
     }
-    async update(modelUri: string, newModel: any): Promise<void> {
-        this.restClient.patch<string>(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`);
+    update(modelUri: string, newModel: any): Promise<Response<string>> {
+        return this.restClient.patch(`${ModelServerPaths.MODEL_CRUD}/${modelUri}`)
+            .then(r => r.mapBody(b => b.data));
     }
 
     getSchema(modelUri: string): Promise<Response<string>> {
-        return this.restClient.get<string>(`${ModelServerPaths.SCHEMA}/${modelUri}`);
+        return this.restClient.get(`${ModelServerPaths.SCHEMA}/${modelUri}`)
+            .then(r => r.mapBody(b => b.data));
     }
 
-    async configure(configuration: ServerConfiguration): Promise<void> {
-        this.restClient.put(ModelServerPaths.SERVER_CONFIGURE, configuration);
+    configure(configuration: ServerConfiguration): Promise<Response<boolean>> {
+        return this.restClient.put(ModelServerPaths.SERVER_CONFIGURE, configuration)
+            .then(r => r.mapBody(b => b.type === "success"));
     }
 
-    ping(): Promise<Response<string>> {
-        return this.restClient.get<string>(ModelServerPaths.SERVER_PING);
+    ping(): Promise<Response<boolean>> {
+        return this.restClient.get(ModelServerPaths.SERVER_PING)
+            .then(r => r.mapBody(b => b.type === "success"));
     }
 }
 

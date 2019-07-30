@@ -40,10 +40,16 @@ export const GetModelCommand: Command = {
     label: "getModel(SuperBrewer3000.coffee)"
 };
 
+export const GetAllCommand: Command = {
+    id: 'ApiTest.GetAll',
+    label: "getAll()"
+};
+
 export const API_TEST_MENU = [...MAIN_MENU_BAR, '9_API_TEST_MENU'];
 export const GET_SCHEMA = [...API_TEST_MENU, GetSchemaCommand.label];
 export const PING = [...API_TEST_MENU, PingCommand.label];
 export const GET_MODEL = [...API_TEST_MENU, GetModelCommand.label];
+export const GET_ALL = [...API_TEST_MENU, GetAllCommand.label];
 
 
 @injectable()
@@ -70,12 +76,20 @@ export class ApiTestMenuContribution implements MenuContribution, CommandContrib
                     .then(response => this.messageService.info(response.toString()));
             }
         });
+
+        commands.registerCommand(GetAllCommand, {
+            execute: () => {
+                this.modelServerApi.getAll()
+                    .then(response => this.messageService.info(response.toString()));
+            }
+        });
     }
     registerMenus(menus: MenuModelRegistry): void {
         menus.registerSubmenu(API_TEST_MENU, 'ModelServer');
         menus.registerMenuAction(API_TEST_MENU, { commandId: PingCommand.id });
         menus.registerMenuAction(API_TEST_MENU, { commandId: GetSchemaCommand.id });
         menus.registerMenuAction(API_TEST_MENU, { commandId: GetModelCommand.id });
+        menus.registerMenuAction(API_TEST_MENU, { commandId: GetAllCommand.id });
     }
 }
 
