@@ -42,35 +42,35 @@ export class RestClient {
     }
 
 
-    async get<T>(path: string, parameters?: Map<string, string>): Promise<Response<T>> {
+    async get(path: string, parameters?: Map<string, string>): Promise<Response<any>> {
         let getUrl = path;
         if (parameters) {
             const urlParameters = this.encodeURLParameters(parameters);
             getUrl = getUrl.concat(urlParameters);
         }
-        return this.performRequest<T>('get', getUrl);
+        return this.performRequest<any>('get', getUrl);
     }
 
-    async post<T>(url: string, body?: any): Promise<Response<T>> {
-        return this.performRequest<T>('post', url, body);
+    async post(url: string, body?: any): Promise<Response<any>> {
+        return this.performRequest<any>('post', url, body);
     }
 
-    async put<T>(url: string, body?: any): Promise<Response<T>> {
-        return this.performRequest<T>('PUT', url, body);
+    async put(url: string, body?: any): Promise<Response<any>> {
+        return this.performRequest<any>('PUT', url, body);
     }
 
-    async patch<T>(url: string, body?: any): Promise<Response<T>> {
-        return this.performRequest<T>('patch', url, body);
+    async patch(url: string, body?: any): Promise<Response<any>> {
+        return this.performRequest<any>('patch', url, body);
 
     }
 
-    async remove<T>(url: string, parameters?: Map<string, string>): Promise<Response<T>> {
+    async remove(url: string, parameters?: Map<string, string>): Promise<Response<any>> {
         let deleteUrl = url;
         if (parameters) {
             const urlParameters = this.encodeURLParameters(parameters);
             deleteUrl = deleteUrl.concat(urlParameters);
         }
-        return this.performRequest<T>('delete', deleteUrl);
+        return this.performRequest<any>('delete', deleteUrl);
 
     }
 
@@ -87,11 +87,16 @@ export class RestClient {
     }
 }
 export class Response<T> {
-    constructor(readonly element: T, readonly statusCode: number, readonly statusMessage: string) { }
+
+    constructor(readonly body: T, readonly statusCode: number, readonly statusMessage: string) { }
 
     toString() {
         return `StatusCode: ${this.statusCode}
                 StatusMessage: ${this.statusMessage}
-                Response: ${this.element ? JSON.stringify(this.element) : "undefined"}`;
+                Body: ${this.body ? JSON.stringify(this.body) : "undefined"}`;
+    }
+
+    public mapBody<U>(mapper: (body: T) => U): Response<U> {
+        return new Response(mapper(this.body), this.statusCode, this.statusMessage);
     }
 }
