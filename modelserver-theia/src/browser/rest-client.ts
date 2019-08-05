@@ -32,7 +32,6 @@ export class RestClient {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            mode: 'cors',
             method: verb,
             body: jsonBody
         });
