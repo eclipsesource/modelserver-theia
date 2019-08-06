@@ -20,35 +20,41 @@ import { RawProcess, RawProcessFactory } from "@theia/process/lib/node/raw-proce
 import * as cp from "child_process";
 import { inject, injectable, optional } from "inversify";
 
-import { DEFAULT_LAUNCH_OPTIONS, LaunchOptions, ModelServerBackend } from "../common/model-server-backend";
+import { DEFAULT_LAUNCH_OPTIONS, LaunchOptions, ModelServerClient } from "../common/model-server-client";
 
 export const ModelServerLauncher = Symbol("ModelServerLauncher");
 
 export interface ModelServerLauncher {
-    start(): boolean;
+    startServer(): boolean;
     dispose(): void;
 }
 
 @injectable()
-export class DefaultModelServerLauncher implements ModelServerLauncher, ModelServerBackend, BackendApplicationContribution {
-    @inject(LaunchOptions) @optional() protected readonly launchOptions: LaunchOptions;
+export class DefaultModelServerLauncher implements ModelServerLauncher, BackendApplicationContribution {
+    @inject(LaunchOptions) @optional() protected readonly launchOptions: LaunchOptions = DEFAULT_LAUNCH_OPTIONS;
     @inject(RawProcessFactory) protected readonly processFactory: RawProcessFactory;
     @inject(ProcessManager) protected readonly processManager: ProcessManager;
+    @inject(ModelServerClient) protected readonly modelserverClient: ModelServerClient;
 
     initialize() {
-        if (!this.launchOptions.isRunning && !this.start()) {
-            this.logError("Error during model server startup");
-        }
+        this.modelserverClient.initialize().then(initialized => {
+            if (initialized) {
+                this.modelserverClient.ping().then(alive => {
+                    if (!alive) {
+                        this.logError("Error during model server startup");
+                    } else {
+                        this.logInfo("Modelserver is already running");
+                    }
+                }).catch(() => {
+                    this.logInfo("Starting modelserver from jar");
+                    this.startServer();
+
+                });
+            }
+        });
     }
 
-    start(): boolean {
-        if (!this.launchOptions.isRunning) {
-            return this.startServer();
-        }
-        return true;
-    }
-
-    protected startServer(): boolean {
+    startServer(): boolean {
         if (this.launchOptions.jarPath) {
             let args = ["-jar", this.launchOptions.jarPath, "--port", `${this.launchOptions.serverPort}`];
             if (this.launchOptions.additionalArgs) {
@@ -78,10 +84,6 @@ export class DefaultModelServerLauncher implements ModelServerLauncher, ModelSer
             });
             process.nextTick(() => resolve(rawProcess));
         });
-    }
-
-    getLaunchOptions(): Promise<LaunchOptions> {
-        return Promise.resolve(this.launchOptions ? this.launchOptions : DEFAULT_LAUNCH_OPTIONS);
     }
 
     protected onDidFailSpawnProcess(error: Error | ProcessErrorEvent): void {

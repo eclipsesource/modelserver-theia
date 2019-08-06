@@ -16,16 +16,14 @@
 import { FrontendApplicationContribution, WebSocketConnectionProvider } from "@theia/core/lib/browser";
 import { ContainerModule } from "inversify";
 
-import { MODEL_SERVER_BACKEND_PATH, ModelServerBackend } from "../common/model-server-backend";
+import { MODEL_SERVER_CLIENT_SERVICE_PATH, ModelServerClient } from "../common/model-server-client";
 import { ModelServerFrontendContribution } from "./model-server-frontend-contribution";
-import { DefaultModelServerApi, ModelServerApi } from "./modelserver-api";
 
 export default new ContainerModule(bind => {
     bind(ModelServerFrontendContribution).toSelf().inSingletonScope();
     bind(FrontendApplicationContribution).toService(ModelServerFrontendContribution);
-    bind(ModelServerApi).to(DefaultModelServerApi).inSingletonScope();
-    bind(ModelServerBackend).toDynamicValue(ctx => {
+    bind(ModelServerClient).toDynamicValue(ctx => {
         const connection = ctx.container.get(WebSocketConnectionProvider);
-        return connection.createProxy<ModelServerBackend>(MODEL_SERVER_BACKEND_PATH);
+        return connection.createProxy<ModelServerClient>(MODEL_SERVER_CLIENT_SERVICE_PATH);
     }).inSingletonScope();
 });

@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { ModelServerApi } from "@modelserver/theia/lib/browser";
+import { ModelServerClient, Response } from "@modelserver/theia/lib/common";
 import {
     Command,
     CommandContribution,
@@ -55,32 +55,32 @@ export const GET_ALL = [...API_TEST_MENU, GetAllCommand.label];
 @injectable()
 export class ApiTestMenuContribution implements MenuContribution, CommandContribution {
     @inject(MessageService) protected readonly messageService: MessageService;
-    @inject(ModelServerApi) protected readonly modelServerApi: ModelServerApi;
+    @inject(ModelServerClient) protected readonly modelServerClient: ModelServerClient;
 
     registerCommands(commands: CommandRegistry): void {
         commands.registerCommand(GetSchemaCommand, {
             execute: () => {
-                this.modelServerApi.getSchema("SuperBrewer3000.coffee")
-                    .then(response => this.messageService.info(response.toString()));
+                this.modelServerClient.getSchema("SuperBrewer3000.coffee")
+                    .then(response => this.messageService.info(printResponse(response)));
             }
         });
         commands.registerCommand(PingCommand, {
             execute: () => {
-                this.modelServerApi.ping()
-                    .then(response => this.messageService.info(response.toString()));
+                this.modelServerClient.ping()
+                    .then(response => this.messageService.info(printResponse(response)));
             }
         });
         commands.registerCommand(GetModelCommand, {
             execute: () => {
-                this.modelServerApi.get("SuperBrewer3000.coffee")
-                    .then(response => this.messageService.info(response.toString()));
+                this.modelServerClient.get("SuperBrewer3000.coffee")
+                    .then(response => this.messageService.info(printResponse(response)));
             }
         });
 
         commands.registerCommand(GetAllCommand, {
             execute: () => {
-                this.modelServerApi.getAll()
-                    .then(response => this.messageService.info(response.toString()));
+                this.modelServerClient.getAll()
+                    .then(response => this.messageService.info(printResponse(response)));
             }
         });
     }
@@ -92,5 +92,13 @@ export class ApiTestMenuContribution implements MenuContribution, CommandContrib
         menus.registerMenuAction(API_TEST_MENU, { commandId: GetAllCommand.id });
     }
 }
+
+function printResponse(response: Response<any>) {
+    return `StatusCode: ${response.statusCode}
+            StatusMessage: ${response.statusMessage}
+            Body: ${response.body ? JSON.stringify(response.body) : "undefined"}`;
+}
+
+
 
 
