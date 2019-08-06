@@ -13,5 +13,5 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-export * from "../browser/modelserver-api";
-export * from "../browser/rest-client";
+export * from "../node/modelserver-api";
+export * from "../node/rest-client";

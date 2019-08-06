@@ -18,25 +18,22 @@ import { FrontendApplication, FrontendApplicationContribution } from "@theia/cor
 import { WorkspaceService } from "@theia/workspace/lib/browser";
 import { inject, injectable } from "inversify";
 
-import { ModelServerApi } from "./modelserver-api";
+import { ModelServerClient } from "../common";
 
 @injectable()
 export class ModelServerFrontendContribution implements FrontendApplicationContribution {
     @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService;
-    @inject(ModelServerApi) protected readonly modelServerService: ModelServerApi;
+    @inject(ModelServerClient) protected readonly modelServerClient: ModelServerClient;
 
     configure(app: FrontendApplication): MaybePromise<void> {
         return this.setup();
     }
 
     async setup(): Promise<void> {
-        const success = await this.modelServerService.initialize();
-        if (success) {
-            this.workspaceService.onWorkspaceChanged(e => {
-                if (e[0] && e[0].uri) {
-                    this.modelServerService.configure({ workspaceRoot: e[0].uri });
-                }
-            });
-        }
+        this.workspaceService.onWorkspaceChanged(e => {
+            if (e[0] && e[0].uri) {
+                this.modelServerClient.configure({ workspaceRoot: e[0].uri });
+            }
+        });
     }
 }

@@ -13,6 +13,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { Response } from "../common/model-server-client";
+
 const fetch = require("node-fetch");
 /**
  * A simple helper class for performing REST requests
@@ -40,36 +42,35 @@ export class RestClient {
 
     }
 
-
-    async get(path: string, parameters?: Map<string, string>): Promise<Response<any>> {
+    async get<T>(path: string, parameters?: Map<string, string>): Promise<Response<T>> {
         let getUrl = path;
         if (parameters) {
             const urlParameters = this.encodeURLParameters(parameters);
             getUrl = getUrl.concat(urlParameters);
         }
-        return this.performRequest<any>('get', getUrl);
+        return this.performRequest<T>('get', getUrl);
     }
 
-    async post(url: string, body?: any): Promise<Response<any>> {
-        return this.performRequest<any>('post', url, body);
+    async post<T>(url: string, body?: any): Promise<Response<T>> {
+        return this.performRequest<T>('post', url, body);
     }
 
-    async put(url: string, body?: any): Promise<Response<any>> {
-        return this.performRequest<any>('PUT', url, body);
+    async put<T>(url: string, body?: any): Promise<Response<T>> {
+        return this.performRequest<T>('PUT', url, body);
     }
 
-    async patch(url: string, body?: any): Promise<Response<any>> {
-        return this.performRequest<any>('patch', url, body);
+    async patch<T>(url: string, body?: any): Promise<Response<T>> {
+        return this.performRequest<T>('patch', url, body);
 
     }
 
-    async remove(url: string, parameters?: Map<string, string>): Promise<Response<any>> {
+    async remove<T>(url: string, parameters?: Map<string, string>): Promise<Response<T>> {
         let deleteUrl = url;
         if (parameters) {
             const urlParameters = this.encodeURLParameters(parameters);
             deleteUrl = deleteUrl.concat(urlParameters);
         }
-        return this.performRequest<any>('delete', deleteUrl);
+        return this.performRequest<T>('delete', deleteUrl);
 
     }
 
@@ -83,19 +84,5 @@ export class RestClient {
             return urlParameters.concat(parametersArray.join('&'));
         }
         return '';
-    }
-}
-export class Response<T> {
-
-    constructor(readonly body: T, readonly statusCode: number, readonly statusMessage: string) { }
-
-    toString() {
-        return `StatusCode: ${this.statusCode}
-                StatusMessage: ${this.statusMessage}
-                Body: ${this.body ? JSON.stringify(this.body) : "undefined"}`;
-    }
-
-    public mapBody<U>(mapper: (body: T) => U): Response<U> {
-        return new Response(mapper(this.body), this.statusCode, this.statusMessage);
     }
 }
