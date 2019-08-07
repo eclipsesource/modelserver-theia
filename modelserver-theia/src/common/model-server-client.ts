@@ -29,6 +29,8 @@ export interface ModelServerClient {
 
     configure(configuration?: ServerConfiguration): Promise<Response<boolean>>;
     ping(): Promise<Response<boolean>>;
+
+    getLaunchOptions(): Promise<LaunchOptions>;
 }
 
 
