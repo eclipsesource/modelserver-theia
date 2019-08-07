@@ -67,4 +67,8 @@ export class DefaultModelServerClient implements ModelServerClient {
         return this.restClient.get<{ type: string }>(ModelServerPaths.SERVER_PING)
             .then(r => r.mapBody(b => b.type === "success"));
     }
+
+    getLaunchOptions(): Promise<LaunchOptions> {
+        return Promise.resolve(this.options ? this.options : DEFAULT_LAUNCH_OPTIONS);
+    }
 }
