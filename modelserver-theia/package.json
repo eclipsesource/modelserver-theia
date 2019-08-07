@@ -25,7 +25,8 @@
   "dependencies": {
     "@theia/core": "^0.7.1",
     "@theia/workspace": "^0.7.1",
-    "node-fetch": "2.6.0"
+    "node-fetch": "2.6.0",
+    "ws": "7.1.1"
   },
   "devDependencies": {
     "rimraf": "latest",

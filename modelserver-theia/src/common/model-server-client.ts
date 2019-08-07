@@ -14,49 +14,83 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 
-export const MODEL_SERVER_CLIENT_SERVICE_PATH = "/services/modelserverclient";
+import { JsonRpcServer } from '@theia/core/lib/common/messaging';
+export const MODEL_SERVER_CLIENT_SERVICE_PATH = '/services/modelserverclient';
 
-export const ModelServerClient = Symbol("ModelServerClient");
-export interface ModelServerClient {
-    initialize(): Promise<boolean>;
+export interface ModelServerCommand {
+  eClass: 'http://www.eclipsesource.com/schema/2019/modelserver/command#//Command';
+  type: 'compound' | 'add' | 'remove' | 'set' | 'replace' | 'move';
+  owner: {
+    eClass: string;
+    $ref: string;
+  };
+  feature: string;
+  indices: number[];
+  dataValues?: string[];
+  objectValues?: string[];
+  objectsToAdd?: string[];
+}
+export const ModelServerFrontendClient = Symbol('ModelServerFrontendClient');
+export interface ModelServerFrontendClient {
+  onOpen(): void;
 
-    get(modelUri: string): Promise<Response<string>>
-    getAll(): Promise<Response<string[] | string>>
-    delete(modelUri: string): Promise<Response<boolean>>
-    update(modelUri: string, newModel: string): Promise<Response<string>>;
+  onMessage(response: string | { body: string }): void;
 
-    getSchema(modelUri: string): Promise<Response<string>>
+  onClosed(code: number, reason: string): void;
 
-    configure(configuration?: ServerConfiguration): Promise<Response<boolean>>;
-    ping(): Promise<Response<boolean>>;
+  onError(error: Error): void;
+}
+
+export const ModelServerClient = Symbol('ModelServerClient');
+export interface ModelServerClient
+  extends JsonRpcServer<ModelServerFrontendClient> {
+  initialize(): Promise<boolean>;
+
+  get(modelUri: string): Promise<Response<string>>;
+  getAll(): Promise<Response<string[] | string>>;
+  delete(modelUri: string): Promise<Response<boolean>>;
+  // snapshot update
+  update(modelUri: string, newModel: any): Promise<Response<string>>;
+
+  configure(configuration?: ServerConfiguration): Promise<Response<boolean>>;
+  ping(): Promise<Response<boolean>>;
 
     getLaunchOptions(): Promise<LaunchOptions>;
+  // subscribe
+  subscribe(modelUri: string): void;
+  unsubscribe(modelUri: string): void;
+
+  edit(
+    modelUri: string,
+    command: ModelServerCommand
+  ): Promise<Response<boolean>>;
 }
 
-
-export const LaunchOptions = Symbol("LaunchOptions");
+export const LaunchOptions = Symbol('LaunchOptions');
 export interface LaunchOptions {
-    baseURL: string
-    serverPort: number
-    hostname: string
-    jarPath?: string
-    additionalArgs?: string[];
+  baseURL: string;
+  serverPort: number;
+  hostname: string;
+  jarPath?: string;
+  additionalArgs?: string[];
 }
 export const DEFAULT_LAUNCH_OPTIONS: LaunchOptions = {
-    baseURL: "api/v1",
-    serverPort: 8081,
-    hostname: "localhost"
+  baseURL: 'api/v1',
+  serverPort: 8081,
+  hostname: 'localhost'
 };
 
 export interface ServerConfiguration {
-    workspaceRoot: string;
+  workspaceRoot: string;
 }
 export class Response<T> {
+  constructor(
+    readonly body: T,
+    readonly statusCode: number,
+    readonly statusMessage: string
+  ) {}
 
-    constructor(readonly body: T, readonly statusCode: number, readonly statusMessage: string) { }
-
-    public mapBody<U>(mapper: (body: T) => U): Response<U> {
-        return new Response(mapper(this.body), this.statusCode, this.statusMessage);
-    }
+  public mapBody<U>(mapper: (body: T) => U): Response<U> {
+    return new Response(mapper(this.body), this.statusCode, this.statusMessage);
+  }
 }
-

@@ -13,7 +13,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-export * from './frontend-module';
-export * from './model-server-frontend-contribution';
-export * from './model-server-subscription-service';
-export * from './model-server-frontend-client';
+import { Event } from '@theia/core';
+export const ModelServerSubscriptionService = Symbol(
+  'ModelServerSubscriptionService'
+);
+export interface ModelServerSubscriptionService {
+  readonly onOpenListener: Event<void>;
+  readonly onMessageListener: Event<string | { body: string }>;
+  readonly onClosedListener: Event<string>;
+  readonly onErrorListener: Event<Error>;
+}
