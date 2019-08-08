@@ -31,11 +31,16 @@ export interface ModelServerCommand {
   objectValues?: string[];
   objectsToAdd?: string[];
 }
+
+export interface ModelServerMessage {
+  type: "dirtyState" | "incrementalUpdate" | "fullUpdate" | "success" | "error";
+  data: any;
+}
 export const ModelServerFrontendClient = Symbol('ModelServerFrontendClient');
 export interface ModelServerFrontendClient {
   onOpen(): void;
 
-  onMessage(response: string | { body: string }): void;
+  onMessage(message: ModelServerMessage): void;
 
   onClosed(code: number, reason: string): void;
 
@@ -55,6 +60,7 @@ export interface ModelServerClient
 
   configure(configuration?: ServerConfiguration): Promise<Response<boolean>>;
   ping(): Promise<Response<boolean>>;
+  save(modelUri: string): Promise<Response<boolean>>;
 
   getLaunchOptions(): Promise<LaunchOptions>;
   // subscribe

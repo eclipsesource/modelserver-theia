@@ -27,4 +27,6 @@ export namespace ModelServerPaths {
   export const SUBSCRIPTION = 'subscribe'; // accepts query parameter "modeluri"
 
   export const COMMANDS = 'edit';
+
+  export const SAVE = 'save';
 }

@@ -69,7 +69,14 @@ export class DefaultModelServerClient implements ModelServerClient {
       .remove<{ type: string }>(
         `${ModelServerPaths.MODEL_CRUD}?modeluri=${modelUri}`
       )
-      .then(r => r.mapBody(b => b.type === 'confirm'));
+      .then(r => r.mapBody(b => b.type === 'success'));
+  }
+  save(modelUri: string): Promise<Response<boolean>> {
+    return this.restClient
+      .get<{ type: string }>(
+        `${ModelServerPaths.SAVE}?modeluri=${modelUri}`
+      )
+      .then(r => r.mapBody(b => b.type === 'success'));
   }
   update(modelUri: string, newModel: any): Promise<Response<string>> {
     return this.restClient
@@ -98,11 +105,7 @@ export class DefaultModelServerClient implements ModelServerClient {
       }?modeluri=${modelUri}`;
     const socket = new WebSocket(path);
     socket.on('message', data => {
-      try {
-        this.client.onMessage(JSON.parse(data.toString()));
-      } catch {
-        this.client.onMessage(data.toString());
-      }
+      this.client.onMessage(JSON.parse(data.toString()));
     });
     socket.on('close', (code, reason) => {
       this.client.onClosed(code, reason);
@@ -139,7 +142,7 @@ export class DefaultModelServerClient implements ModelServerClient {
   }
 
   dispose() {
-    //FIXME implement
+    // FIXME implement
   }
 
   getLaunchOptions(): Promise<LaunchOptions> {

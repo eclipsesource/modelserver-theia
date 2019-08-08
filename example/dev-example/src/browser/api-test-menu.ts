@@ -33,7 +33,7 @@ export const PingCommand: Command = {
 
 export const GetModelCommand: Command = {
   id: 'ApiTest.GetModel',
-  label: 'getModel(superbrewer3000.coffee)'
+  label: 'getModel(SuperBrewer3000.coffee)'
 };
 
 export const GetAllCommand: Command = {
@@ -42,19 +42,23 @@ export const GetAllCommand: Command = {
 };
 export const PatchCommand: Command = {
   id: 'ApiTest.Patch',
-  label: 'patch(superbrewer3000.coffee)'
+  label: 'patch(SuperBrewer3000.coffee)'
 };
 export const SubscribeCommand: Command = {
   id: 'ApiTest.Subscribe',
-  label: 'subscribe(superbrewer3000.coffee)'
+  label: 'subscribe(SuperBrewer3000.coffee)'
 };
 export const UnsubscribeCommand: Command = {
   id: 'ApiTest.Unsubscribe',
-  label: 'unsubscribe(superbrewer3000.coffee)'
+  label: 'unsubscribe(SuperBrewer3000.coffee)'
 };
 export const EditSetCommand: Command = {
   id: 'ApiTest.EditSet',
-  label: 'edit(superbrewer3000.coffee,{type:set})'
+  label: 'edit(SuperBrewer3000.coffee,{type:set})'
+};
+export const SaveCommand: Command = {
+  id: 'ApiTest.Save',
+  label: 'save(SuperBrewer3000.coffee)'
 };
 
 export const API_TEST_MENU = [...MAIN_MENU_BAR, '9_API_TEST_MENU'];
@@ -65,6 +69,7 @@ export const PATCH = [...API_TEST_MENU, PatchCommand.label];
 export const SUBSCRIBE = [...API_TEST_MENU, SubscribeCommand.label];
 export const UNSUBSCRIBE = [...API_TEST_MENU, UnsubscribeCommand.label];
 export const EDIT_SET = [...API_TEST_MENU, EditSetCommand.label];
+export const SAVE = [...API_TEST_MENU, SaveCommand.label];
 
 const exampleFilePatch = {
   'eClass':
@@ -143,7 +148,7 @@ export class ApiTestMenuContribution
     commands.registerCommand(PatchCommand, {
       execute: () => {
         this.modelServerClient
-          .update('superbrewer3000.coffee', exampleFilePatch)
+          .update('SuperBrewer3000.coffee', exampleFilePatch)
           .then(response => this.messageService.info(printResponse(response)));
       }
     });
@@ -152,13 +157,12 @@ export class ApiTestMenuContribution
         this.modelServerSubscriptionService.onOpenListener(() =>
           this.messageService.info('Subscription opened!')
         );
-        this.modelServerSubscriptionService.onMessageListener(response => {
-          if (typeof response === 'string') {
-            this.messageService.info(response);
-          } else {
-            this.messageService.info(JSON.stringify(response));
-          }
-        });
+        this.modelServerSubscriptionService.onDirtyStateListener(dirtyState => this.messageService.info(`DirtyState ${dirtyState}`));
+        this.modelServerSubscriptionService.onIncrementalUpdateListener(incrementalUpdate => this.messageService.info(`IncrementalUpdate ${JSON.stringify(incrementalUpdate)}`));
+        this.modelServerSubscriptionService.onFullUpdateListener(fullUpdate => this.messageService.info(`FullUpdate ${JSON.stringify(fullUpdate)}`));
+        this.modelServerSubscriptionService.onSuccessListener(successMessage => this.messageService.info(`Success ${successMessage}`));
+        this.modelServerSubscriptionService.onUnknownMessageListener(message => this.messageService.warn(`Unknown Message ${JSON.stringify(message)}`));
+
         this.modelServerSubscriptionService.onClosedListener(reason =>
           this.messageService.info(`Closed!
         Reason: ${reason}`)
@@ -166,12 +170,12 @@ export class ApiTestMenuContribution
         this.modelServerSubscriptionService.onErrorListener(error =>
           this.messageService.error(JSON.stringify(error))
         );
-        this.modelServerClient.subscribe('superbrewer3000.coffee');
+        this.modelServerClient.subscribe('SuperBrewer3000.coffee');
       }
     });
     commands.registerCommand(UnsubscribeCommand, {
       execute: () => {
-        this.modelServerClient.unsubscribe('superbrewer3000.coffee');
+        this.modelServerClient.unsubscribe('SuperBrewer3000.coffee');
       }
     });
     commands.registerCommand(EditSetCommand, {
@@ -184,13 +188,18 @@ export class ApiTestMenuContribution
             'eClass':
               'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask',
             '$ref':
-              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/superbrewer3000.coffee#//@workflows.0'
+              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0'
           },
           'feature': 'name',
           'dataValues': ['Auto Brew'],
           'indices': [-1]
         };
-        this.modelServerClient.edit('superbrewer3000.coffee', setCommand);
+        this.modelServerClient.edit('SuperBrewer3000.coffee', setCommand);
+      }
+    });
+    commands.registerCommand(SaveCommand, {
+      execute: () => {
+        this.modelServerClient.save('SuperBrewer3000.coffee');
       }
     });
   }
@@ -205,6 +214,7 @@ export class ApiTestMenuContribution
       commandId: UnsubscribeCommand.id
     });
     menus.registerMenuAction(API_TEST_MENU, { commandId: EditSetCommand.id });
+    menus.registerMenuAction(API_TEST_MENU, { commandId: SaveCommand.id });
   }
 }
 

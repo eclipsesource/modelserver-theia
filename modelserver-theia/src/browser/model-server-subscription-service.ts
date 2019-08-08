@@ -20,7 +20,12 @@ export const ModelServerSubscriptionService = Symbol(
 );
 export interface ModelServerSubscriptionService {
   readonly onOpenListener: Event<void>;
-  readonly onMessageListener: Event<string | { body: string }>;
   readonly onClosedListener: Event<string>;
   readonly onErrorListener: Event<Error>;
+
+  readonly onDirtyStateListener: Event<boolean>;
+  readonly onIncrementalUpdateListener: Event<Object>;
+  readonly onFullUpdateListener: Event<Object>;
+  readonly onSuccessListener: Event<string>;
+  readonly onUnknownMessageListener: Event<string>;
 }
