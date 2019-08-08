@@ -15,12 +15,18 @@
  ********************************************************************************/
 
 export namespace ModelServerPaths {
-    export const INDEX = "index";
-    export const MODEL_URIS = "modeluris";
-    export const MODEL_CRUD = "models";
+  export const INDEX = 'index';
+  export const MODEL_URIS = 'modeluris';
+  export const MODEL_CRUD = 'models';
 
-    export const SCHEMA = "schema";
+  export const SCHEMA = 'schema';
 
-    export const SERVER_CONFIGURE = "server/configure";
-    export const SERVER_PING = "server/ping";
+  export const SERVER_CONFIGURE = 'server/configure';
+  export const SERVER_PING = 'server/ping';
+
+  export const SUBSCRIPTION = 'subscribe'; // accepts query parameter "modeluri"
+
+  export const COMMANDS = 'edit';
+
+  export const SAVE = 'save';
 }
