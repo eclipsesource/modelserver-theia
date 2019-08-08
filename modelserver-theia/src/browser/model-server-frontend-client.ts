@@ -13,10 +13,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { injectable } from 'inversify';
-import { Event, Emitter } from '@theia/core';
-import { ModelServerFrontendClient } from '../common/model-server-client';
-import { ModelServerSubscriptionService } from './model-server-subscription-service';
+import { Emitter, Event } from "@theia/core";
+import { injectable } from "inversify";
+
+import { ModelServerFrontendClient } from "../common/model-server-client";
+import { ModelServerSubscriptionService } from "./model-server-subscription-service";
 
 @injectable()
 export class ModelServerFrontendClientImpl

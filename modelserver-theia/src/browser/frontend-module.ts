@@ -13,20 +13,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import {
-  FrontendApplicationContribution,
-  WebSocketConnectionProvider
-} from '@theia/core/lib/browser';
-import { ContainerModule } from 'inversify';
+import { FrontendApplicationContribution, WebSocketConnectionProvider } from "@theia/core/lib/browser";
+import { ContainerModule } from "inversify";
 
 import {
   MODEL_SERVER_CLIENT_SERVICE_PATH,
   ModelServerClient,
   ModelServerFrontendClient
-} from '../common/model-server-client';
-import { ModelServerFrontendContribution } from './model-server-frontend-contribution';
-import { ModelServerSubscriptionService } from './model-server-subscription-service';
-import { ModelServerFrontendClientImpl } from './model-server-frontend-client';
+} from "../common/model-server-client";
+import { ModelServerFrontendClientImpl } from "./model-server-frontend-client";
+import { ModelServerFrontendContribution } from "./model-server-frontend-contribution";
+import { ModelServerSubscriptionService } from "./model-server-subscription-service";
 
 export default new ContainerModule(bind => {
   bind(ModelServerFrontendContribution)

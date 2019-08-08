@@ -13,12 +13,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import {
-  ModelServerClient,
-  Response,
-  ModelServerCommand
-} from '@modelserver/theia/lib/common';
-import { ModelServerSubscriptionService } from '@modelserver/theia/lib/browser';
+import { ModelServerSubscriptionService } from "@modelserver/theia/lib/browser";
+import { ModelServerClient, ModelServerCommand, Response } from "@modelserver/theia/lib/common";
 import {
   Command,
   CommandContribution,
@@ -27,8 +23,8 @@ import {
   MenuContribution,
   MenuModelRegistry,
   MessageService
-} from '@theia/core';
-import { inject, injectable } from 'inversify';
+} from "@theia/core";
+import { inject, injectable } from "inversify";
 
 export const PingCommand: Command = {
   id: 'ApiTest.Ping',
@@ -216,6 +212,6 @@ function printResponse(response: Response<any>) {
   return `StatusCode: ${response.statusCode}
             StatusMessage: ${response.statusMessage}
             Body: ${
-              response.body ? JSON.stringify(response.body) : 'undefined'
-            }`;
+    response.body ? JSON.stringify(response.body) : 'undefined'
+    }`;
 }

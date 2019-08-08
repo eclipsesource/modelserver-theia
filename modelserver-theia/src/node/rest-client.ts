@@ -13,14 +13,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { Response } from '../common/model-server-client';
+import { Response } from "../common/model-server-client";
 
 const fetch = require('node-fetch');
 /**
  * A simple helper class for performing REST requests
  */
 export class RestClient {
-  constructor(protected baseUrl: string) {}
+  constructor(protected baseUrl: string) { }
 
   private async performRequest<T>(
     verb: string,

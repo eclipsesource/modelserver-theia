@@ -13,19 +13,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import * as WebSocket from 'ws';
-import { inject, injectable, optional } from 'inversify';
+import { inject, injectable, optional } from "inversify";
+import * as WebSocket from "ws";
+
 import {
   DEFAULT_LAUNCH_OPTIONS,
   LaunchOptions,
   ModelServerClient,
-  Response,
-  ServerConfiguration,
   ModelServerCommand,
-  ModelServerFrontendClient
-} from '../common/model-server-client';
-import { ModelServerPaths } from '../common/model-server-paths';
-import { RestClient } from './rest-client';
+  ModelServerFrontendClient,
+  Response,
+  ServerConfiguration
+} from "../common/model-server-client";
+import { ModelServerPaths } from "../common/model-server-paths";
+import { RestClient } from "./rest-client";
 
 @injectable()
 export class DefaultModelServerClient implements ModelServerClient {
@@ -45,7 +46,7 @@ export class DefaultModelServerClient implements ModelServerClient {
   prepareBaseUrl() {
     this.baseUrl = `http://${this.options.hostname}:${
       this.options.serverPort
-    }/${this.options.baseURL}`;
+      }/${this.options.baseURL}`;
     if (!this.baseUrl.endsWith('/')) {
       this.baseUrl = this.baseUrl + '/';
     }
@@ -94,7 +95,7 @@ export class DefaultModelServerClient implements ModelServerClient {
   subscribe(modelUri: string): void {
     const path = `${this.baseUrl}${
       ModelServerPaths.SUBSCRIPTION
-    }?modeluri=${modelUri}`;
+      }?modeluri=${modelUri}`;
     const socket = new WebSocket(path);
     socket.on('message', data => {
       try {

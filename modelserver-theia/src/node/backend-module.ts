@@ -13,20 +13,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { ConnectionHandler, JsonRpcConnectionHandler } from '@theia/core';
-import { BackendApplicationContribution } from '@theia/core/lib/node';
-import { ContainerModule } from 'inversify';
+import { ConnectionHandler, JsonRpcConnectionHandler } from "@theia/core";
+import { BackendApplicationContribution } from "@theia/core/lib/node";
+import { ContainerModule } from "inversify";
 
-import { DefaultModelServerClient } from './modelserver-api';
 import {
   MODEL_SERVER_CLIENT_SERVICE_PATH,
   ModelServerClient,
   ModelServerFrontendClient
-} from '../common/model-server-client';
-import {
-  DefaultModelServerLauncher,
-  ModelServerLauncher
-} from './model-server-backend-contribution';
+} from "../common/model-server-client";
+import { DefaultModelServerLauncher, ModelServerLauncher } from "./model-server-backend-contribution";
+import { DefaultModelServerClient } from "./modelserver-api";
 
 export default new ContainerModule(bind => {
   bind(DefaultModelServerLauncher)

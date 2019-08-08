@@ -13,8 +13,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { JsonRpcServer } from "@theia/core/lib/common/messaging";
 
-import { JsonRpcServer } from '@theia/core/lib/common/messaging';
+
 export const MODEL_SERVER_CLIENT_SERVICE_PATH = '/services/modelserverclient';
 
 export interface ModelServerCommand {
@@ -55,7 +56,7 @@ export interface ModelServerClient
   configure(configuration?: ServerConfiguration): Promise<Response<boolean>>;
   ping(): Promise<Response<boolean>>;
 
-    getLaunchOptions(): Promise<LaunchOptions>;
+  getLaunchOptions(): Promise<LaunchOptions>;
   // subscribe
   subscribe(modelUri: string): void;
   unsubscribe(modelUri: string): void;
@@ -88,7 +89,7 @@ export class Response<T> {
     readonly body: T,
     readonly statusCode: number,
     readonly statusMessage: string
-  ) {}
+  ) { }
 
   public mapBody<U>(mapper: (body: T) => U): Response<U> {
     return new Response(mapper(this.body), this.statusCode, this.statusMessage);
