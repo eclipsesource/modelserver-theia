@@ -25,7 +25,7 @@ export class RestClient {
   private async performRequest<T>(
     verb: string,
     path: string,
-    body?: any
+    body?: string
   ): Promise<Response<T>> {
     const response = await fetch(this.baseUrl + path, {
       headers: {
@@ -33,7 +33,7 @@ export class RestClient {
         'Content-Type': 'application/json'
       },
       method: verb,
-      body: body ? JSON.stringify({ data: body }) : undefined
+      body
     });
     const json = (await response.json()) as T;
     return new Response(json, response.status, response.statusText);
@@ -51,15 +51,15 @@ export class RestClient {
     return this.performRequest<T>('get', getUrl);
   }
 
-  async post<T>(url: string, body?: any): Promise<Response<T>> {
+  async post<T>(url: string, body?: string): Promise<Response<T>> {
     return this.performRequest<T>('post', url, body);
   }
 
-  async put<T>(url: string, body?: any): Promise<Response<T>> {
+  async put<T>(url: string, body?: string): Promise<Response<T>> {
     return this.performRequest<T>('PUT', url, body);
   }
 
-  async patch<T>(url: string, body?: any): Promise<Response<T>> {
+  async patch<T>(url: string, body?: string): Promise<Response<T>> {
     return this.performRequest<T>('patch', url, body);
   }
 

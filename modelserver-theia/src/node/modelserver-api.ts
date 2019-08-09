@@ -82,14 +82,15 @@ export class DefaultModelServerClient implements ModelServerClient {
     return this.restClient
       .patch<{ data: string }>(
         `${ModelServerPaths.MODEL_CRUD}?modeluri=${modelUri}`,
-        newModel
+        JSON.stringify({ data: newModel })
       )
       .then(r => r.mapBody(b => b.data));
   }
 
   configure(configuration: ServerConfiguration): Promise<Response<boolean>> {
+    const cleanPath = configuration.workspaceRoot.replace('file://', '');
     return this.restClient
-      .put<{ type: string }>(ModelServerPaths.SERVER_CONFIGURE, configuration)
+      .put<{ type: string }>(ModelServerPaths.SERVER_CONFIGURE, JSON.stringify({ workspaceRoot: cleanPath }))
       .then(r => r.mapBody(b => b.type === 'success'));
   }
 
@@ -132,7 +133,7 @@ export class DefaultModelServerClient implements ModelServerClient {
     return this.restClient
       .patch<{ type: string }>(
         `${ModelServerPaths.COMMANDS}?modeluri=${modelUri}`,
-        command
+        JSON.stringify({ data: command })
       )
       .then(r => r.mapBody(b => b.type === 'success'));
   }
