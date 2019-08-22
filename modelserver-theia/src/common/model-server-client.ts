@@ -18,6 +18,10 @@ import { JsonRpcServer } from "@theia/core/lib/common/messaging";
 
 export const MODEL_SERVER_CLIENT_SERVICE_PATH = '/services/modelserverclient';
 
+export interface ModelServerCommandObjectValue {
+  eClass: string;
+  $ref: string;
+}
 export interface ModelServerCommand {
   eClass: 'http://www.eclipsesource.com/schema/2019/modelserver/command#//Command';
   type: 'compound' | 'add' | 'remove' | 'set' | 'replace' | 'move';
@@ -26,10 +30,11 @@ export interface ModelServerCommand {
     $ref: string;
   };
   feature: string;
-  indices: number[];
-  dataValues?: string[];
-  objectValues?: string[];
-  objectsToAdd?: string[];
+  indices?: number[];
+  dataValues?: any[];
+  objectValues?: ModelServerCommandObjectValue[];
+  objectsToAdd?: object[];
+  commands?: ModelServerCommand[];
 }
 
 export interface ModelServerMessage {

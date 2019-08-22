@@ -56,6 +56,14 @@ export const EditSetCommand: Command = {
   id: 'ApiTest.EditSet',
   label: 'edit(SuperBrewer3000.coffee,{type:set})'
 };
+export const EditAddCommand: Command = {
+  id: 'ApiTest.EditAdd',
+  label: 'edit(SuperBrewer3000.coffee,{type:add})'
+};
+export const EditRemoveCommand: Command = {
+  id: 'ApiTest.EditRemove',
+  label: 'edit(SuperBrewer3000.coffee,{type:remove})'
+};
 export const SaveCommand: Command = {
   id: 'ApiTest.Save',
   label: 'save(SuperBrewer3000.coffee)'
@@ -69,6 +77,8 @@ export const PATCH = [...API_TEST_MENU, PatchCommand.label];
 export const SUBSCRIBE = [...API_TEST_MENU, SubscribeCommand.label];
 export const UNSUBSCRIBE = [...API_TEST_MENU, UnsubscribeCommand.label];
 export const EDIT_SET = [...API_TEST_MENU, EditSetCommand.label];
+export const EDIT_REMOVE = [...API_TEST_MENU, EditRemoveCommand.label];
+export const EDIT_ADD = [...API_TEST_MENU, EditAddCommand.label];
 export const SAVE = [...API_TEST_MENU, SaveCommand.label];
 
 const exampleFilePatch = {
@@ -188,13 +198,49 @@ export class ApiTestMenuContribution
             'eClass':
               'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask',
             '$ref':
-              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0'
+              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0/@nodes.0'
           },
           'feature': 'name',
-          'dataValues': ['Auto Brew'],
-          'indices': [-1]
+          'dataValues': ['Auto Brew']
         };
         this.modelServerClient.edit('SuperBrewer3000.coffee', setCommand);
+      }
+    });
+    commands.registerCommand(EditRemoveCommand, {
+      execute: () => {
+        const removeCommand: ModelServerCommand = {
+          'eClass':
+            'http://www.eclipsesource.com/schema/2019/modelserver/command#//Command',
+          'type': 'remove',
+          'owner': {
+            'eClass':
+              'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
+            '$ref':
+              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0'
+          },
+          'feature': 'nodes',
+          'indices': [0]
+        };
+        this.modelServerClient.edit('SuperBrewer3000.coffee', removeCommand);
+      }
+    });
+    commands.registerCommand(EditAddCommand, {
+      execute: () => {
+        const addCommand: ModelServerCommand = {
+          'eClass':
+            'http://www.eclipsesource.com/schema/2019/modelserver/command#//Command',
+          'type': 'add',
+          'owner': {
+            'eClass':
+              'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
+            '$ref':
+              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0'
+          },
+          'feature': 'nodes',
+          objectValues: [{ eClass: 'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask', $ref: "//@objectsToAdd.0" }],
+          objectsToAdd: [{ eClass: 'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask' }]
+        };
+        this.modelServerClient.edit('SuperBrewer3000.coffee', addCommand);
       }
     });
     commands.registerCommand(SaveCommand, {
@@ -214,6 +260,8 @@ export class ApiTestMenuContribution
       commandId: UnsubscribeCommand.id
     });
     menus.registerMenuAction(API_TEST_MENU, { commandId: EditSetCommand.id });
+    menus.registerMenuAction(API_TEST_MENU, { commandId: EditRemoveCommand.id });
+    menus.registerMenuAction(API_TEST_MENU, { commandId: EditAddCommand.id });
     menus.registerMenuAction(API_TEST_MENU, { commandId: SaveCommand.id });
   }
 }
