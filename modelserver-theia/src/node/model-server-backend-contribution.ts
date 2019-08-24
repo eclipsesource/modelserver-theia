@@ -83,6 +83,8 @@ export class DefaultModelServerLauncher implements ModelServerLauncher, BackendA
                 reject(error);
             });
             process.nextTick(() => resolve(rawProcess));
+            // FIXME this should actually be a request to the model server, similar to the ping
+            this.modelserverClient.setExecutionRoot(process.cwd());
         });
     }
 

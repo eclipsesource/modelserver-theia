@@ -134,10 +134,9 @@ export class ApiTestMenuContribution
 
 
   private getWorkspaceURI(): string {
-    // FIXME read this from the model server
+    // FIXME remove the commented line as soon as the modelserver can return the temp directory
     // return 'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace';
-
-    return 'file:/home/eugen/Git/modelserver-theia/example/browser-app/.temp/workspace';
+    return `file:${this.modelServerSubscriptionService.getTempLocation()}`;
   }
   registerCommands(commands: CommandRegistry): void {
     commands.registerCommand(PingCommand, {

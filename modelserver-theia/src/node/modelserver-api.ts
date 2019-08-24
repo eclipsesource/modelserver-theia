@@ -37,6 +37,7 @@ export class DefaultModelServerClient implements ModelServerClient {
   private openSockets: { [modelUri: string]: WebSocket } = {};
   private baseUrl: string;
   private client: ModelServerFrontendClient;
+  private executionLocation: string;
 
   initialize(): Promise<boolean> {
     this.prepareBaseUrl();
@@ -140,6 +141,7 @@ export class DefaultModelServerClient implements ModelServerClient {
 
   setClient(client: ModelServerFrontendClient) {
     this.client = client;
+    this.setTempLocation();
   }
 
   dispose() {
@@ -150,5 +152,15 @@ export class DefaultModelServerClient implements ModelServerClient {
     return Promise.resolve(
       this.options ? this.options : DEFAULT_LAUNCH_OPTIONS
     );
+  }
+
+  setExecutionRoot(location: string): void {
+    this.executionLocation = location;
+    this.setTempLocation();
+  }
+
+  private setTempLocation(): void {
+    if (this.client && this.executionLocation)
+      this.client.setTempLocation(`${this.executionLocation}/.temp/workspace`);
   }
 }

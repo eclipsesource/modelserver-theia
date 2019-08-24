@@ -22,6 +22,7 @@ import { ModelServerSubscriptionService } from "./model-server-subscription-serv
 @injectable()
 export class ModelServerFrontendClientImpl
   implements ModelServerFrontendClient, ModelServerSubscriptionService {
+  private tempLocation: string;
   onOpen(): void {
     this.onOpenEmitter.fire();
   }
@@ -100,5 +101,12 @@ export class ModelServerFrontendClientImpl
   protected onUnknownMessageEmitter = new Emitter<Readonly<string>>();
   get onUnknownMessageListener(): Event<string> {
     return this.onUnknownMessageEmitter.event;
+  }
+
+  setTempLocation(location: string): void {
+    this.tempLocation = location;
+  }
+  getTempLocation(): string {
+    return this.tempLocation;
   }
 }

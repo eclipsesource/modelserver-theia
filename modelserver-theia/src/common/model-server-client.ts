@@ -50,6 +50,8 @@ export interface ModelServerFrontendClient {
   onClosed(code: number, reason: string): void;
 
   onError(error: Error): void;
+
+  setTempLocation(location: string): void;
 }
 
 export const ModelServerClient = Symbol('ModelServerClient');
@@ -76,6 +78,8 @@ export interface ModelServerClient
     modelUri: string,
     command: ModelServerCommand
   ): Promise<Response<boolean>>;
+
+  setExecutionRoot(location: string): void;
 }
 
 export const LaunchOptions = Symbol('LaunchOptions');
