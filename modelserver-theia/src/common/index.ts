@@ -15,3 +15,4 @@
  ********************************************************************************/
 
 export * from "./model-server-client";
+export * from './model-server-util';

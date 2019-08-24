@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { ModelServerSubscriptionService } from "@modelserver/theia/lib/browser";
-import { ModelServerClient, ModelServerCommand, Response } from "@modelserver/theia/lib/common";
+import { ModelServerClient, ModelServerCommand, ModelServerCommandUtil, Response } from "@modelserver/theia/lib/common";
 import {
   Command,
   CommandContribution,
@@ -132,6 +132,13 @@ export class ApiTestMenuContribution
   @inject(ModelServerSubscriptionService)
   protected readonly modelServerSubscriptionService: ModelServerSubscriptionService;
 
+
+  private getWorkspaceURI(): string {
+    // FIXME read this from the model server
+    // return 'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace';
+
+    return 'file:/home/eugen/Git/modelserver-theia/example/browser-app/.temp/workspace';
+  }
   registerCommands(commands: CommandRegistry): void {
     commands.registerCommand(PingCommand, {
       execute: () => {
@@ -190,56 +197,43 @@ export class ApiTestMenuContribution
     });
     commands.registerCommand(EditSetCommand, {
       execute: () => {
-        const setCommand: ModelServerCommand = {
+        const owner = {
           'eClass':
-            'http://www.eclipsesource.com/schema/2019/modelserver/command#//Command',
-          'type': 'set',
-          'owner': {
-            'eClass':
-              'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask',
-            '$ref':
-              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0/@nodes.0'
-          },
-          'feature': 'name',
-          'dataValues': ['Auto Brew']
+            'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask',
+          '$ref':
+            `${this.getWorkspaceURI()}/SuperBrewer3000.coffee#//@workflows.0/@nodes.0`
         };
+        const feature = 'name';
+        const changedValues = ['Auto Brew'];
+        const setCommand: ModelServerCommand = ModelServerCommandUtil.createSetCommand(owner, feature, changedValues);
         this.modelServerClient.edit('SuperBrewer3000.coffee', setCommand);
       }
     });
     commands.registerCommand(EditRemoveCommand, {
       execute: () => {
-        const removeCommand: ModelServerCommand = {
+        const owner = {
           'eClass':
-            'http://www.eclipsesource.com/schema/2019/modelserver/command#//Command',
-          'type': 'remove',
-          'owner': {
-            'eClass':
-              'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
-            '$ref':
-              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0'
-          },
-          'feature': 'nodes',
-          'indices': [0]
+            'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
+          '$ref':
+            `${this.getWorkspaceURI()}/SuperBrewer3000.coffee#//@workflows.0`
         };
+        const feature = 'nodes';
+        const indices = [0];
+        const removeCommand: ModelServerCommand = ModelServerCommandUtil.createRemoveCommand(owner, feature, indices);
         this.modelServerClient.edit('SuperBrewer3000.coffee', removeCommand);
       }
     });
     commands.registerCommand(EditAddCommand, {
       execute: () => {
-        const addCommand: ModelServerCommand = {
+        const owner = {
           'eClass':
-            'http://www.eclipsesource.com/schema/2019/modelserver/command#//Command',
-          'type': 'add',
-          'owner': {
-            'eClass':
-              'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
-            '$ref':
-              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0'
-          },
-          'feature': 'nodes',
-          objectValues: [{ eClass: 'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask', $ref: "//@objectsToAdd.0" }],
-          objectsToAdd: [{ eClass: 'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask' }]
+            'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
+          '$ref':
+            `${this.getWorkspaceURI()}/SuperBrewer3000.coffee#//@workflows.0`
         };
+        const feature = 'nodes';
+        const toAdd = [{ eClass: 'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask' }];
+        const addCommand: ModelServerCommand = ModelServerCommandUtil.createAddCommand(owner, feature, toAdd);
         this.modelServerClient.edit('SuperBrewer3000.coffee', addCommand);
       }
     });
