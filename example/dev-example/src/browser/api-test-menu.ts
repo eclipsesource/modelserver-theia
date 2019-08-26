@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { ModelServerSubscriptionService } from "@modelserver/theia/lib/browser";
-import { ModelServerClient, ModelServerCommand, Response } from "@modelserver/theia/lib/common";
+import { ModelServerClient, ModelServerCommand, ModelServerCommandUtil, Response } from "@modelserver/theia/lib/common";
 import {
   Command,
   CommandContribution,
@@ -24,6 +24,7 @@ import {
   MenuModelRegistry,
   MessageService
 } from "@theia/core";
+import { WorkspaceService } from "@theia/workspace/lib/browser";
 import { inject, injectable } from "inversify";
 
 export const PingCommand: Command = {
@@ -56,6 +57,14 @@ export const EditSetCommand: Command = {
   id: 'ApiTest.EditSet',
   label: 'edit(SuperBrewer3000.coffee,{type:set})'
 };
+export const EditAddCommand: Command = {
+  id: 'ApiTest.EditAdd',
+  label: 'edit(SuperBrewer3000.coffee,{type:add})'
+};
+export const EditRemoveCommand: Command = {
+  id: 'ApiTest.EditRemove',
+  label: 'edit(SuperBrewer3000.coffee,{type:remove})'
+};
 export const SaveCommand: Command = {
   id: 'ApiTest.Save',
   label: 'save(SuperBrewer3000.coffee)'
@@ -69,6 +78,8 @@ export const PATCH = [...API_TEST_MENU, PatchCommand.label];
 export const SUBSCRIBE = [...API_TEST_MENU, SubscribeCommand.label];
 export const UNSUBSCRIBE = [...API_TEST_MENU, UnsubscribeCommand.label];
 export const EDIT_SET = [...API_TEST_MENU, EditSetCommand.label];
+export const EDIT_REMOVE = [...API_TEST_MENU, EditRemoveCommand.label];
+export const EDIT_ADD = [...API_TEST_MENU, EditAddCommand.label];
 export const SAVE = [...API_TEST_MENU, SaveCommand.label];
 
 const exampleFilePatch = {
@@ -121,6 +132,17 @@ export class ApiTestMenuContribution
   protected readonly modelServerClient: ModelServerClient;
   @inject(ModelServerSubscriptionService)
   protected readonly modelServerSubscriptionService: ModelServerSubscriptionService;
+  private workspaceUri: string;
+
+
+  constructor(@inject(WorkspaceService) protected readonly workspaceService: WorkspaceService) {
+    workspaceService.onWorkspaceChanged(e => {
+      if (e[0] && e[0].uri) {
+        this.workspaceUri = e[0].uri.replace("file://", "file:");
+      }
+    });
+
+  }
 
   registerCommands(commands: CommandRegistry): void {
     commands.registerCommand(PingCommand, {
@@ -180,21 +202,44 @@ export class ApiTestMenuContribution
     });
     commands.registerCommand(EditSetCommand, {
       execute: () => {
-        const setCommand: ModelServerCommand = {
+        const owner = {
           'eClass':
-            'http://www.eclipsesource.com/schema/2019/modelserver/command#//Command',
-          'type': 'set',
-          'owner': {
-            'eClass':
-              'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask',
-            '$ref':
-              'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace/SuperBrewer3000.coffee#//@workflows.0'
-          },
-          'feature': 'name',
-          'dataValues': ['Auto Brew'],
-          'indices': [-1]
+            'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask',
+          '$ref':
+            `${this.workspaceUri}/SuperBrewer3000.coffee#//@workflows.0/@nodes.0`
         };
+        const feature = 'name';
+        const changedValues = ['Auto Brew'];
+        const setCommand: ModelServerCommand = ModelServerCommandUtil.createSetCommand(owner, feature, changedValues);
         this.modelServerClient.edit('SuperBrewer3000.coffee', setCommand);
+      }
+    });
+    commands.registerCommand(EditRemoveCommand, {
+      execute: () => {
+        const owner = {
+          'eClass':
+            'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
+          '$ref':
+            `${this.workspaceUri}/SuperBrewer3000.coffee#//@workflows.0`
+        };
+        const feature = 'nodes';
+        const indices = [0];
+        const removeCommand: ModelServerCommand = ModelServerCommandUtil.createRemoveCommand(owner, feature, indices);
+        this.modelServerClient.edit('SuperBrewer3000.coffee', removeCommand);
+      }
+    });
+    commands.registerCommand(EditAddCommand, {
+      execute: () => {
+        const owner = {
+          'eClass':
+            'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
+          '$ref':
+            `${this.workspaceUri}/SuperBrewer3000.coffee#//@workflows.0`
+        };
+        const feature = 'nodes';
+        const toAdd = [{ eClass: 'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask' }];
+        const addCommand: ModelServerCommand = ModelServerCommandUtil.createAddCommand(owner, feature, toAdd);
+        this.modelServerClient.edit('SuperBrewer3000.coffee', addCommand);
       }
     });
     commands.registerCommand(SaveCommand, {
@@ -214,6 +259,8 @@ export class ApiTestMenuContribution
       commandId: UnsubscribeCommand.id
     });
     menus.registerMenuAction(API_TEST_MENU, { commandId: EditSetCommand.id });
+    menus.registerMenuAction(API_TEST_MENU, { commandId: EditRemoveCommand.id });
+    menus.registerMenuAction(API_TEST_MENU, { commandId: EditAddCommand.id });
     menus.registerMenuAction(API_TEST_MENU, { commandId: SaveCommand.id });
   }
 }
