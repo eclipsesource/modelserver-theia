@@ -24,6 +24,7 @@ import {
   MenuModelRegistry,
   MessageService
 } from "@theia/core";
+import { WorkspaceService } from "@theia/workspace/lib/browser";
 import { inject, injectable } from "inversify";
 
 export const PingCommand: Command = {
@@ -131,13 +132,18 @@ export class ApiTestMenuContribution
   protected readonly modelServerClient: ModelServerClient;
   @inject(ModelServerSubscriptionService)
   protected readonly modelServerSubscriptionService: ModelServerSubscriptionService;
+  private workspaceUri: string;
 
 
-  private getWorkspaceURI(): string {
-    // FIXME remove the commented line as soon as the modelserver can return the temp directory
-    // return 'file:/home/eugen/Git/modelserver/examples/com.eclipsesource.modelserver.example/.temp/workspace';
-    return `file:${this.modelServerSubscriptionService.getTempLocation()}`;
+  constructor(@inject(WorkspaceService) protected readonly workspaceService: WorkspaceService) {
+    workspaceService.onWorkspaceChanged(e => {
+      if (e[0] && e[0].uri) {
+        this.workspaceUri = e[0].uri.replace("file://", "file:");
+      }
+    });
+
   }
+
   registerCommands(commands: CommandRegistry): void {
     commands.registerCommand(PingCommand, {
       execute: () => {
@@ -200,7 +206,7 @@ export class ApiTestMenuContribution
           'eClass':
             'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask',
           '$ref':
-            `${this.getWorkspaceURI()}/SuperBrewer3000.coffee#//@workflows.0/@nodes.0`
+            `${this.workspaceUri}/SuperBrewer3000.coffee#//@workflows.0/@nodes.0`
         };
         const feature = 'name';
         const changedValues = ['Auto Brew'];
@@ -214,7 +220,7 @@ export class ApiTestMenuContribution
           'eClass':
             'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
           '$ref':
-            `${this.getWorkspaceURI()}/SuperBrewer3000.coffee#//@workflows.0`
+            `${this.workspaceUri}/SuperBrewer3000.coffee#//@workflows.0`
         };
         const feature = 'nodes';
         const indices = [0];
@@ -228,7 +234,7 @@ export class ApiTestMenuContribution
           'eClass':
             'http://www.eclipsesource.com/modelserver/example/coffeemodel#//Workflow',
           '$ref':
-            `${this.getWorkspaceURI()}/SuperBrewer3000.coffee#//@workflows.0`
+            `${this.workspaceUri}/SuperBrewer3000.coffee#//@workflows.0`
         };
         const feature = 'nodes';
         const toAdd = [{ eClass: 'http://www.eclipsesource.com/modelserver/example/coffeemodel#//AutomaticTask' }];

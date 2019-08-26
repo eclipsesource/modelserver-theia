@@ -28,6 +28,4 @@ export interface ModelServerSubscriptionService {
   readonly onFullUpdateListener: Event<Object>;
   readonly onSuccessListener: Event<string>;
   readonly onUnknownMessageListener: Event<string>;
-
-  getTempLocation(): string;
 }
