@@ -1,3 +1,4 @@
+# **!!! This repository is discontinued. This project has moved to [eclipse-emfcloud](https://github.com/eclipse-emfcloud/emfcloud-modelserver-theia) and will be maintained there !!!**
 # modelserver-theia
 Modelserver integration for Theia https://github.com/eclipsesource/modelserver
 
